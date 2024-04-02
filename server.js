@@ -5,7 +5,7 @@ const fs = require('fs');
 const jwt = require('jsonwebtoken');
 const path = require('path');
 const app = express();
-const PORT = 5000;
+const PORT = 80;
 // const PORT = 5000;
 // const PORT = process.env.PORT || 3306;
 const SECRET_KEY = 'suresh@123'; // Replace with a secure secret key
@@ -13,7 +13,7 @@ const SECRET_KEY = 'suresh@123'; // Replace with a secure secret key
 // app.use(cors());
 // Enable CORS for specific origins
 const corsOptions = {
-    origin: 'http://localhost:3000',
+    origin: 'http://51.21.1.198:5000',
     methods: ['POST'], // Allow only POST requests
 };
 
