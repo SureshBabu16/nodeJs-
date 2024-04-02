@@ -4,25 +4,17 @@ const multer = require("multer");
 const fs = require('fs');
 const jwt = require('jsonwebtoken');
 const path = require('path');
+
 const app = express();
 const PORT = 80;
-// const PORT = 5000;
-// const PORT = process.env.PORT || 3306;
-const SECRET_KEY = 'suresh@123'; // Replace with a secure secret key
+const SECRET_KEY = process.env.SECRET_KEY || 'suresh@123'; // Use environment variable for secret key
 
-// app.use(cors());
-// Enable CORS for specific origins
-const corsOptions = {
-    origin: 'http://malayalee-club.s3-website.ap-south-1.amazonaws.com',
-    methods: ['POST','GET'], // Allow only POST requests
-};
-
-app.use(cors(corsOptions));
+app.use(cors()); // Allow all origins by default
 app.use(express.json());
 app.use('/uploads', express.static('uploads'));
-let users = [];
 
-// Read user data from the JSON file
+// Load user data from JSON file
+let users = [];
 try {
     const data = fs.readFileSync('users.json');
     users = JSON.parse(data).users;
@@ -45,7 +37,6 @@ const upload = multer({
     storage: storage,
     limits: { fileSize: 10 * 1024 * 1024 }, // 10 MB limit (adjust as needed)
 });
-// const upload = multer({ storage });
 
 // Upload endpoint
 app.post("/upload", upload.single("image"), (req, res) => {
@@ -61,49 +52,43 @@ app.post("/upload", upload.single("image"), (req, res) => {
     res.status(200).json({ imagePath, uploadDate });
 });
 
-
-// Add the /upcomingEvents endpoint to fetch upcoming events
+// Fetch upcoming events
 app.get('/upEvents', (req, res) => {
-    // Read the JSON file containing events data
     const eventsData = require('./uploads.json'); // Adjust the path accordingly
-
-    // Filter events based on date (considering only future events)
     const currentDate = new Date();
     const upcomingEvents = eventsData.filter((event) => new Date(event.uploadDate) > currentDate);
-
     res.json(upcomingEvents);
 });
 
-// Add the /upcomingEvents endpoint to fetch upcoming events
+// Fetch past events
 app.get('/pastEvents', (req, res) => {
-    // Read the JSON file containing events data
     const eventsData = require('./uploads.json'); // Adjust the path accordingly
-
-    // Filter events based on date (considering only future events)
     const currentDate = new Date();
-    const upcomingEvents = eventsData.filter((event) => new Date(event.uploadDate) < currentDate);
-
-    res.json(upcomingEvents);
+    const pastEvents = eventsData.filter((event) => new Date(event.uploadDate) < currentDate);
+    res.json(pastEvents);
 });
 
-
+// Admin login
 app.post('/admin/login', (req, res) => {
     const { username, password } = req.body;
-
     const adminUser = users.find(user => user.username === username && user.password === password && user.isAdmin);
-
     if (adminUser) {
-        // Generate a JWT token
         const token = jwt.sign({ username, isAdmin: true }, SECRET_KEY);
-
         res.json({ message: 'Admin login successful!', token });
     } else {
         res.status(401).json({ message: 'Invalid admin credentials' });
     }
 });
 
+// Test endpoint
 app.get('/data', (req, res) => {
     res.json({ message: 'Hello from the server!' });
+});
+
+// Error handling middleware
+app.use((err, req, res, next) => {
+    console.error(err.stack);
+    res.status(500).send('Internal Server Error');
 });
 
 app.listen(PORT, () => {
