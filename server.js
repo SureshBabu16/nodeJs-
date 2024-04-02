@@ -12,9 +12,12 @@ const SECRET_KEY = 'suresh@123'; // Replace with a secure secret key
 
 // app.use(cors());
 // Enable CORS for specific origins
+const corsOptions = {
+    origin: 'http://51.21.1.198',
+    methods: ['POST'], // Allow only POST requests
+};
 
-
-app.use(cors());
+app.use(cors(corsOptions));
 app.use(express.json());
 app.use('/uploads', express.static('uploads'));
 let users = [];
