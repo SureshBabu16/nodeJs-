@@ -13,8 +13,8 @@ const SECRET_KEY = 'suresh@123'; // Replace with a secure secret key
 // app.use(cors());
 // Enable CORS for specific origins
 const corsOptions = {
-    origin: 'http://malayalee-club.s3-website.ap-south-1.amazonaws.com',
-    methods: ['POST'], // Allow only POST requests
+    origin: 'http://malayalee-club.s3-website.ap-south-1.amazonaws.com'
+    // methods: ['POST'], 
 };
 
 app.use(cors(corsOptions));
