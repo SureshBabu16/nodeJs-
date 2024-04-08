@@ -1,0 +1,8 @@
+{
+    "watch": ["."],
+    "ext": ".js,.json",
+    "execMap": {
+      ".js": "pm2 restart server.js",
+      ".json": "pm2 restart server.js"
+    }
+  }
